@@ -9,12 +9,12 @@
     <implements-subsite-p>f</implements-subsite-p>
     <inherit-templates-p>f</inherit-templates-p>
     
-    <version name="0.1d1" url="http://openacs.org/repository/download/apm/permissions-0.1d1.apm">
+    <version name="0.1d2" url="http://openacs.org/repository/download/apm/permissions-0.1d2.apm">
         <owner url="mailto:vguerra@wu.ac.at">Victor Manuel Guerra Moran</owner>
         <summary>This package implements database and tcl api for checking permissions. Such implementations take advantage of the new ability of PG to run recursive queries.</summary>
         <maturity>0</maturity>
 
-        <provides url="permissions" version="0.1d1"/>
+        <provides url="permissions" version="0.1d2"/>
 
         <callbacks>
         </callbacks>
