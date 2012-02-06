@@ -76,3 +76,7 @@ begin
 	  where pap.member_id = a_party_id
       ;
  end; $$ language plpgsql stable;
+
+
+-- some recursive site_nodes functions
+\i site-nodes-create.sql
