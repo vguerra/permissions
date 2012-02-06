@@ -2,14 +2,14 @@
 
 #rename ::dotlrn::set_can_browse ::dotlrn::set_can_browse_old
 
-ad_proc -public dotlrn::set_can_browse {
-    {-user_id ""}
-    {-can_browse:boolean}
-} {
-    sets whether a user can browse communities
-} {
-    eval dotlrn::toggle_can_browse -user_id $user_id [expr {$can_browse_p ? "-can_browse" : ""}]
-}
+# ad_proc -public dotlrn::set_can_browse {
+#     {-user_id ""}
+#     {-can_browse:boolean}
+# } {
+#     sets whether a user can browse communities
+# } {
+#     eval dotlrn::toggle_can_browse -user_id $user_id [expr {$can_browse_p ? "-can_browse" : ""}]
+# }
 
 
 #rename ::permission::permission_p_not_cached ::permission::permission_p_not_cached_old
@@ -31,4 +31,9 @@ ad_proc -private permission::permission_p_not_cached {
 	return [permissions::permission_p_not_cached_recursive -party_id $party_id \
 		    -object_id $object_id -privilege $privilege]
     }
+}
+
+ad_after_server_initialization register_pg84_queries {
+    ns_log Warning "PERMISSIONS: Loading PG 8.4 version of some queries"
+    db_qd_load_query_file "[acs_root_dir]/packages/permissions/tcl/pg-8.4.queries"
 }

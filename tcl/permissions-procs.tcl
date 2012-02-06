@@ -35,20 +35,20 @@ ad_proc -private permissions::permission_p_not_cached_recursive {
 
 namespace eval dotlrn {}
 
-ad_proc -public dotlrn::toggle_can_browse {
-    {-user_id:required}
-    {-can_browse:boolean}
-} {
-        sets whether a user can browse communities
-} {
-    set browsing_group_id [group::get_id -group_name "dotlrn-browsing"]
-    if {$can_browse_p} {
-           group::add_member -group_id $browsing_group_id \
-               -user_id $user_id
-    } else {
-          # we should probably just change the state of the relation here
-          group::remove_member -group_id $browsing_group_id \
-              -user_id $user_id
-      }
-}
+# ad_proc -public dotlrn::toggle_can_browse {
+#     {-user_id:required}
+#     {-can_browse:boolean}
+# } {
+#         sets whether a user can browse communities
+# } {
+#     set browsing_group_id [group::get_id -group_name "dotlrn-browsing"]
+#     if {$can_browse_p} {
+#            group::add_member -group_id $browsing_group_id \
+#                -user_id $user_id
+#     } else {
+#           # we should probably just change the state of the relation here
+#           group::remove_member -group_id $browsing_group_id \
+#               -user_id $user_id
+#       }
+# }
 
