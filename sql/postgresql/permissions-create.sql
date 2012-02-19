@@ -1,6 +1,47 @@
 -- Using recursivity for checking permissions
 -- Victor Guerra (vguerra@wu.ac.at)
 
+select define_function_args('acs_permission__permission_p_recursive_plus','a_object_id,a_party_id,a_privilege,a_composites_p');
+
+create or replace function acs_permission__permission_p_recursive_plus(a_object_id integer, a_party_id integer, a_privilege varchar, a_composites_p boolean)
+returns boolean as $$
+begin
+    return exists (With RECURSIVE object_context(object_id, context_id) AS (
+            SELECT a_object_id, a_object_id
+            Union ALL
+                SELECT ao.object_id,
+                CASE WHEN (ao.security_inherit_p = 'f' or ao.context_id is null)  THEN acs__magic_object_id('security_context_root')
+                ELSE ao.context_id END
+                FROM object_context oc, acs_objects ao
+                where ao.object_id = oc.context_id
+                and ao.object_id != acs__magic_object_id('security_context_root')
+        ), privilege_ancestors(privilege, child_privilege) AS (
+           SELECT a_privilege, a_privilege
+           Union ALL
+             SELECT aph.privilege, aph.child_privilege
+             FROM privilege_ancestors pa JOIN acs_privilege_hierarchy aph
+             ON aph.child_privilege = pa.privilege
+        ), memberships_recursive (party_id, rel_segment_id, rel_type, member_state, composites_p) AS (
+     	   SELECT a_party_id, a_party_id, 'membership_rel'::varchar(100), 'approved'::varchar(20), a_composites_p
+     	   Union ALL
+	        SELECT ar.object_id_one, coalesce(rs.segment_id, ar.object_id_one), 
+     	        CASE WHEN ar.rel_type='composition_rel' then mr.rel_type else ar.rel_type end,
+		    mrs.member_state, mr.composites_p
+         	from acs_rels ar join memberships_recursive mr on (ar.object_id_two = mr.party_id) 
+     		left outer join membership_rels mrs on ( mrs.rel_id = ar.rel_id  and mrs.member_state = 'approved') 
+     		left outer join rel_segments rs on 
+     	    	     (rs.group_id = ar.object_id_one and rs.rel_type = CASE WHEN ar.rel_type='composition_rel' then mr.rel_type else ar.rel_type end)
+     		where ( NOT (ar.rel_type = 'composition_rel')  OR (mr.composites_p AND (ar.rel_type = 'composition_rel') ) )
+)  SELECT
+          1
+          FROM
+          acs_permissions p
+          join  memberships_recursive m on (m.party_id =  p.grantee_id or m.rel_segment_id = p.grantee_id )
+          join  privilege_ancestors pa  on  pa.privilege  =  p.privilege
+          join  object_context oc on  p.object_id =  oc.context_id	
+        );
+ end; $$ language plpgsql stable;
+
 select define_function_args('acs_permission__permission_p_recursive','a_object_id,a_party_id,a_privilege');
 
 create or replace function acs_permission__permission_p_recursive(a_object_id integer, a_party_id integer, a_privilege varchar)
