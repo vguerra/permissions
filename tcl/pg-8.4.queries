@@ -197,8 +197,8 @@
         [expr {[llength $where_clauses] > 0 ? " and " : ""}]
         [join $where_clauses " and "]
         order by ts_rank(fti,to_tsquery(:query)) desc
-        $limit_clause $offset_clause
 	), :user_id, 'read')
+        $limit_clause $offset_clause
       </querytext>
     </fullquery>
     
