@@ -7,7 +7,7 @@ create or replace function acs_permission__permission_p_recursive(a_object_id in
 returns boolean as $$
 begin
     return exists (With RECURSIVE object_context(object_id, context_id) AS (
-            SELECT a_object_id, a_object_id
+            SELECT a_object_id, a_object_id from acs_objects where object_id = a_object_id
             Union ALL
                 SELECT ao.object_id,
                 CASE WHEN (ao.security_inherit_p = 'f' or ao.context_id is null)  THEN acs__magic_object_id('security_context_root')
