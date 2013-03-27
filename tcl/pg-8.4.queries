@@ -275,7 +275,7 @@
       </querytext>
     </fullquery>
     
-    <fullquery name="dbqd.file-storage.www.folder-chunk.dbselect_folder_contents">
+    <fullquery name="dbqd.file-storage.www.folder-chunk.select_folder_contents">
     <rdbms><type>postgresql</type><version>8.4</version></rdbms>
         <querytext>
 
